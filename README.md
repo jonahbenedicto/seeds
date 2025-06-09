@@ -1,7 +1,7 @@
 # seeds
 Generates a Seeds cellular automata simulation from a GitHub user's contributions and outputs a screen capture as an animated SVG.
 
-![Seeds Animation](./demos/demo-random.svg)
+![Seeds Animation](./demos/demo-two-cluster.svg)
 
 ## Quick Start with GitHub Actions
 
