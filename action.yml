@@ -1,0 +1,78 @@
+name: 'Seeds Profile Generator'
+description: 'Generate Seeds cellular automata animations from GitHub contribution graphs'
+branding:
+  icon: 'activity'
+  color: 'green'
+
+# ⚠️ IMPORTANT: This is NOT a published GitHub Action!
+# 
+# This action.yml file is designed for use within FORKED repositories only.
+# 
+# If you're getting "Unable to resolve action" errors, you need to:
+# 1. Fork this repository to your account
+# 2. Use the workflow that comes with your fork
+# 
+# DO NOT try to reference this repository directly as an action!
+
+inputs:
+  github-token:
+    description: 'GitHub token for API access'
+    required: false
+    default: ${{ github.token }}
+  
+  username:
+    description: 'GitHub username to generate animation for'
+    required: false
+    default: ${{ github.repository_owner }}
+  
+  pattern:
+    description: 'Pattern type: contribution-based, random, two-cluster'
+    required: false
+    default: 'contribution-based'
+  
+  generations:
+    description: 'Number of generations to simulate'
+    required: false
+    default: '60'
+  
+  frame-duration:
+    description: 'Animation speed in milliseconds per frame'
+    required: false
+    default: '800'
+  
+  output:
+    description: 'Output file path for the SVG animation'
+    required: false
+    default: 'assets/seeds-daily.svg'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+      shell: bash
+    
+    - name: Build project
+      run: npm run build
+      shell: bash
+    
+    - name: Create assets directory
+      run: mkdir -p assets
+      shell: bash
+    
+    - name: Generate Seeds animation
+      run: |
+        node dist/cli/command-line.js \
+          --username "${{ inputs.username }}" \
+          --output "${{ inputs.output }}" \
+          --pattern "${{ inputs.pattern }}" \
+          --generations "${{ inputs.generations }}" \
+          --frame-duration "${{ inputs.frame-duration }}" \
+          --github-token "${{ inputs.github-token }}"
+      shell: bash

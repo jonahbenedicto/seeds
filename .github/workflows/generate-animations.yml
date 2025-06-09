@@ -1,0 +1,167 @@
+name: Generate Seeds Animations
+
+on:
+  schedule:
+    # Run daily at 8 AM UTC
+    - cron: '0 8 * * *'
+    # Weekly full generation on Sunday
+    - cron: '0 0 * * 0'
+  
+  workflow_dispatch:
+    inputs:
+      pattern:
+        description: 'Pattern type to generate'
+        required: false
+        default: 'contribution-based'
+        type: choice
+        options:
+        - contribution-based
+        - random
+        - two-cluster
+        - all-patterns
+      generations:
+        description: 'Number of generations'
+        required: false
+        default: '60'
+      frame_duration:
+        description: 'Animation speed (milliseconds per frame)'
+        required: false
+        default: '800'
+      initial_display_duration:
+        description: 'Time to show initial pattern (milliseconds)'
+        required: false
+        default: '3000'
+      show_progress_bar:
+        description: 'Show progress bar below animation'
+        required: false
+        default: 'false'
+        type: boolean
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📂 Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: 🔧 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+    
+    - name: 📁 Prepare assets directory
+      run: |
+        mkdir -p assets
+        echo "Assets directory ready"
+    
+    - name: 🧹 Clean previous animations
+      run: |
+        echo "🧹 Cleaning previous Seeds files..."
+        # Remove files older than 7 days
+        find assets/ -name "seeds-*.svg" -mtime +7 -delete 2>/dev/null || true
+        
+        echo "✨ Cleanup complete"
+    
+    - name: 📦 Install dependencies
+      run: npm ci
+    
+    - name: 🔨 Build project
+      run: npm run build
+    
+    - name: 🎮 Generate animations
+      run: |
+        PATTERN="${{ github.event.inputs.pattern || 'contribution-based' }}"
+        GENERATIONS="${{ github.event.inputs.generations || '60' }}"
+        FRAME_DURATION="${{ github.event.inputs.frame_duration || '800' }}"
+        INITIAL_DISPLAY="${{ github.event.inputs.initial_display_duration || '3000' }}"
+        SHOW_PROGRESS="${{ github.event.inputs.show_progress_bar || 'false' }}"
+        
+        echo "🎮 Generating Seeds animation..."
+        echo "👤 User: ${{ github.repository_owner }}"
+        echo "🎯 Pattern: $PATTERN"
+        echo "🔄 Generations: $GENERATIONS"
+        echo "⏱️ Frame Duration: ${FRAME_DURATION}ms"
+        
+        # Build CLI arguments
+        CLI_ARGS="--username ${{ github.repository_owner }} --generations $GENERATIONS --frame-duration $FRAME_DURATION --initial-display-duration $INITIAL_DISPLAY --github-token ${{ secrets.GITHUB_TOKEN }}"
+        if [ "$SHOW_PROGRESS" = "true" ]; then
+          CLI_ARGS="$CLI_ARGS --show-progress-bar"
+        fi
+        
+        if [ "$PATTERN" = "all-patterns" ]; then
+          echo "🎨 Generating all pattern types..."
+          
+          # Create temporary directory to avoid file conflicts
+          mkdir -p temp_assets
+          
+          # Generate contribution-based pattern to temp directory
+          echo "📊 Generating contribution-based pattern..."
+          node dist/cli/command-line.js $CLI_ARGS --output temp_assets/seeds-contributions.svg --pattern contribution-based
+          
+          # Generate random pattern to temp directory
+          echo "🎲 Generating random pattern..."
+          node dist/cli/command-line.js $CLI_ARGS --output temp_assets/seeds-random.svg --pattern random
+          
+          # Generate two-cluster pattern to temp directory
+          echo "🌱 Generating two-cluster pattern..."
+          node dist/cli/command-line.js $CLI_ARGS --output temp_assets/seeds-two-cluster.svg --pattern two-cluster
+          
+          # Move all files to assets directory at once
+          echo "📁 Moving files to assets directory..."
+          mv temp_assets/seeds-contributions.svg assets/
+          mv temp_assets/seeds-random.svg assets/
+          mv temp_assets/seeds-two-cluster.svg assets/
+          
+          # Clean up temporary directory
+          rm -rf temp_assets
+          
+        else
+          echo "🎯 Generating $PATTERN pattern..."
+          node dist/cli/command-line.js $CLI_ARGS --output assets/seeds-contributions.svg --pattern $PATTERN
+        fi
+        
+        echo "✅ Animation generation complete"
+    
+    - name: 💾 Commit generated files
+      run: |
+        git config --global user.email "action@github.com"
+        git config --global user.name "Seeds Bot"
+        
+        git add assets/
+        
+        if ! git diff --staged --quiet; then
+          PATTERN="${{ github.event.inputs.pattern || 'contribution-based' }}"
+          DATE=$(date '+%Y-%m-%d')
+          
+          if [ "$PATTERN" = "all-patterns" ]; then
+            git commit -m "🌱 Generate Seeds animations - $DATE (all patterns)" \
+                       -m "Generated contribution-based, random, and two-cluster patterns"
+          else
+            git commit -m "🌱 Generate Seeds animation - $DATE ($PATTERN)" \
+                       -m "Pattern: $PATTERN, Generations: ${{ github.event.inputs.generations || '60' }}"
+          fi
+          
+          git push
+          echo "✅ Successfully updated animations!"
+        else
+          echo "🔍 No changes to commit"
+        fi
+    
+    - name: 📊 Summary
+      run: |
+        echo "🌱 Seeds workflow complete!"
+        echo "📅 Date: $(date)"
+        echo "👤 User: ${{ github.repository_owner }}"
+        echo "🎯 Pattern: ${{ github.event.inputs.pattern || 'contribution-based' }}"
+        echo ""
+        echo "📁 Generated files:"
+        ls -la assets/seeds-*.svg 2>/dev/null || echo "No files found"
+# Updated Sun Jun  8 22:44:55 AEST 2025.
