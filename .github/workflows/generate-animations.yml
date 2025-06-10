@@ -125,7 +125,19 @@ jobs:
           
         else
           echo "🎯 Generating $PATTERN pattern..."
-          node dist/cli/command-line.js $CLI_ARGS --output assets/seeds-contributions.svg --pattern $PATTERN
+          # Generate the appropriate filename based on pattern type
+          if [ "$PATTERN" = "contribution-based" ]; then
+            OUTPUT_FILE="assets/seeds-contributions.svg"
+          elif [ "$PATTERN" = "random" ]; then
+            OUTPUT_FILE="assets/seeds-random.svg"
+          elif [ "$PATTERN" = "two-cluster" ]; then
+            OUTPUT_FILE="assets/seeds-two-cluster.svg"
+          else
+            # Fallback for any other pattern types
+            OUTPUT_FILE="assets/seeds-contributions.svg"
+          fi
+          
+          node dist/cli/command-line.js $CLI_ARGS --output $OUTPUT_FILE --pattern $PATTERN
         fi
         
         echo "✅ Animation generation complete"
