@@ -215,9 +215,12 @@ export class SeedsAutomaton {
     // Store initial state
     history.push(JSON.parse(JSON.stringify(this.grid)));
     
-    for (let i = 0; i < maxGens && !this.isExtinct(); i++) {
+    for (let i = 0; i < maxGens; i++) {
       this.nextGeneration();
       history.push(JSON.parse(JSON.stringify(this.grid)));
+      
+      // Continue simulation even if extinct to maintain consistent animation length
+      // Seeds patterns often go extinct but we want full-length animations
     }
     
     return history;
