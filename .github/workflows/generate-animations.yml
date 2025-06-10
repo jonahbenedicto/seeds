@@ -18,6 +18,7 @@ on:
         - contribution-based
         - random
         - two-cluster
+        - seeds-explosion
         - all-patterns
       generations:
         description: 'Number of generations'
@@ -114,11 +115,16 @@ jobs:
           echo "🌱 Generating two-cluster pattern..."
           node dist/cli/command-line.js $CLI_ARGS --output temp_assets/seeds-two-cluster.svg --pattern two-cluster
           
+          # Generate seeds-explosion pattern to temp directory
+          echo "💥 Generating seeds-explosion pattern..."
+          node dist/cli/command-line.js $CLI_ARGS --output temp_assets/seeds-exploding.svg --pattern seeds-explosion
+          
           # Move all files to assets directory at once
           echo "📁 Moving files to assets directory..."
           mv temp_assets/seeds-contributions.svg assets/
           mv temp_assets/seeds-random.svg assets/
           mv temp_assets/seeds-two-cluster.svg assets/
+          mv temp_assets/seeds-exploding.svg assets/
           
           # Clean up temporary directory
           rm -rf temp_assets
@@ -132,6 +138,8 @@ jobs:
             OUTPUT_FILE="assets/seeds-random.svg"
           elif [ "$PATTERN" = "two-cluster" ]; then
             OUTPUT_FILE="assets/seeds-two-cluster.svg"
+          elif [ "$PATTERN" = "seeds-explosion" ]; then
+            OUTPUT_FILE="assets/seeds-exploding.svg"
           else
             # Fallback for any other pattern types
             OUTPUT_FILE="assets/seeds-contributions.svg"
@@ -155,7 +163,7 @@ jobs:
           
           if [ "$PATTERN" = "all-patterns" ]; then
             git commit -m "🌱 Generate Seeds animations - $DATE (all patterns)" \
-                       -m "Generated contribution-based, random, and two-cluster patterns"
+                       -m "Generated contribution-based, random, two-cluster, and seeds-explosion patterns"
           else
             git commit -m "🌱 Generate Seeds animation - $DATE ($PATTERN)" \
                        -m "Pattern: $PATTERN, Generations: ${{ github.event.inputs.generations || '60' }}"

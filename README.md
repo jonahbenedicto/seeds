@@ -27,7 +27,8 @@ The workflow will automatically run daily, or you can trigger it manually:
    - `contribution-based` - Uses your GitHub contribution data
    - `random` - Random starting pattern
    - `two-cluster` - Two-cell cluster pattern for Seeds
-   - `all-patterns` - Generates all three types
+   - `seeds-explosion` - Seeds explosion pattern for dramatic effect
+   - `all-patterns` - Generates all pattern types
 4. Click **"Run workflow"**
 
 Generated animations will appear in the `assets/` folder and can be used in your README:
@@ -58,7 +59,7 @@ node dist/cli/command-line.js -u YOUR_USERNAME -o seeds.svg --github-token YOUR_
 - `-o, --output` - Output file (.svg or .gif)
 
 **Optional:**
-- `--pattern` - Pattern type: `contribution-based`, `random`, `two-cluster`
+- `--pattern` - Pattern type: `contribution-based`, `random`, `two-cluster`, `seeds-explosion`
 - `--generations` - Number of generations (default: 50)
 - `--frame-duration` - Animation speed in ms (default: 100)
 - `--github-token` - GitHub token for contribution data
