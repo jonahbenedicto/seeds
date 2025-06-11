@@ -1,4 +1,5 @@
 import { Grid, Cell, SeedsOptions, Point } from './types';
+import { PatternLibrary } from '../utils/pattern-library';
 
 export class SeedsAutomaton {
   private grid: Grid;
@@ -42,6 +43,9 @@ export class SeedsAutomaton {
         break;
       case 'seeds-explosion':
         this.initializeSeedsExplosion();
+        break;
+      case 'glider':
+        this.initializeGlider();
         break;
       default:
         this.initializeRandom();
@@ -89,6 +93,15 @@ export class SeedsAutomaton {
         const randomLevel = Math.floor(Math.random() * 4) + 1; // 1-4
         this.setCellAlive(x, y, randomLevel);
       }
+    });
+  }
+
+  private initializeGlider(): void {
+    // Use PatternLibrary to get the glider pattern
+    const gliderCells = PatternLibrary.getGliderPattern(this.grid.width, this.grid.height);
+    
+    gliderCells.forEach((cell: Point) => {
+      this.setCellAlive(cell.x, cell.y, 2); // Use contribution level 2 for nice green color
     });
   }
 

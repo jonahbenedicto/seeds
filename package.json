@@ -7,10 +7,11 @@
   "scripts": {
     "build": "tsc",
     "cli": "node dist/cli/command-line.js",
-    "demo": "npm run build && npm run demo:random && npm run demo:two-cluster && npm run demo:exploding",
+    "demo": "npm run build && npm run demo:random && npm run demo:two-cluster && npm run demo:exploding && npm run demo:glider",
     "demo:random": "node dist/cli/command-line.js -u octocat -o demos/demo-random.svg --pattern random --generations 50 --frame-duration 400 --show-progress-bar --initial-display-duration 2000",
     "demo:two-cluster": "node dist/cli/command-line.js -u octocat -o demos/demo-two-cluster.svg --pattern two-cluster --generations 80 --frame-duration 400 --show-progress-bar --initial-display-duration 2000",
-    "demo:exploding": "node dist/cli/command-line.js -u octocat -o demos/demo-exploding.svg --pattern seeds-explosion --generations 60 --frame-duration 400 --show-progress-bar --initial-display-duration 2000"
+    "demo:exploding": "node dist/cli/command-line.js -u octocat -o demos/demo-exploding.svg --pattern seeds-explosion --generations 60 --frame-duration 400 --show-progress-bar --initial-display-duration 2000",
+    "demo:glider": "node dist/cli/command-line.js -u octocat -o demos/demo-glider.svg --pattern glider --generations 70 --frame-duration 400 --show-progress-bar --initial-display-duration 2000"
   },
   "bin": {
     "seeds": "./dist/cli/command-line.js"

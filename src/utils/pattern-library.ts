@@ -126,6 +126,44 @@ export class PatternLibrary {
   }
 
   /**
+   * Get a glider pattern that spawns 5 gliders at different positions
+   * Creates a staircase pattern of gliders that won't collide with each other
+   */
+  static getGliderPattern(gridWidth: number, gridHeight: number): Point[] {
+    const pattern: Point[] = [];
+    
+    // Glider pattern (fixed missing comma)
+    const gliderPattern: [number, number][] = [
+      [-1, 1], [0, 0], [1, 0], [2, 1]
+    ];
+    
+    // Calculate spacing to fit 5 gliders without collision
+    const numGliders = 5;
+    
+    // Space gliders across both X and Y dimensions in a staircase pattern
+    const startX = 8; // Start well away from left edge
+    const xSpacing = Math.floor((gridWidth - startX - 10) / (numGliders - 1)); // Leave room on right edge
+    const startY = 1; // Start near top
+    const ySpacing = Math.max(1, Math.floor((gridHeight - 4) / (numGliders - 1))); // Space across height
+    
+    for (let i = 0; i < numGliders; i++) {
+      // Staircase pattern: each glider at different X and Y
+      const gliderX = startX + (i * xSpacing);
+      const gliderY = startY + (i * ySpacing);
+      
+      gliderPattern.forEach(([dx, dy]) => {
+        const x = gliderX + dx;
+        const y = gliderY + dy;
+        if (x >= 0 && x < gridWidth && y >= 0 && y < gridHeight) {
+          pattern.push({ x, y });
+        }
+      });
+    }
+    
+    return pattern;
+  }
+
+  /**
    * Get all available patterns for the given grid size
    */
   static getAvailablePatterns(gridWidth: number, gridHeight: number): PatternDefinition[] {
@@ -155,6 +193,13 @@ export class PatternLibrary {
         name: 'random',
         description: 'Random sparse seed distribution',
         cells: this.getRandomPattern(gridWidth, gridHeight),
+        width: gridWidth,
+        height: gridHeight
+      },
+      {
+        name: 'glider',
+        description: 'Staircase pattern of 5 gliders at different positions',
+        cells: this.getGliderPattern(gridWidth, gridHeight),
         width: gridWidth,
         height: gridHeight
       }

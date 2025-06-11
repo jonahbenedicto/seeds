@@ -14,7 +14,7 @@ export interface GenerateOptions {
   generations?: number;
   survivalRate?: number;
   frameDuration?: number;
-  pattern?: 'random' | 'two-cluster' | 'seeds-explosion' | 'contribution-based';
+  pattern?: 'random' | 'two-cluster' | 'seeds-explosion' | 'contribution-based' | 'glider';
   initialDisplayDuration?: number;  // How long to show initial pattern
   showProgressBar?: boolean;        // Show progress bar during animation
 }

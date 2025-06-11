@@ -20,7 +20,7 @@ export interface SeedsOptions {
   height: number;
   generations: number;
   survivalRate: number;
-  initialPattern?: 'random' | 'two-cluster' | 'seeds-explosion' | 'contribution-based';
+  initialPattern?: 'random' | 'two-cluster' | 'seeds-explosion' | 'contribution-based' | 'glider';
   initialDensity?: number;
 }
 
